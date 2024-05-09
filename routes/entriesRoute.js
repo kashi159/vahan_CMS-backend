@@ -60,32 +60,35 @@ router.post('/:entityName', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
-  
+
   // Update route
   router.put('/:entityName/:id', async (req, res) => {
     const entityName = req.params.entityName;
     const id = req.params.id;
-    const updates = req.body;
-  
+    let updates = req.body;
+
+    updates = Object.fromEntries(Object.entries(updates).filter(([_, v]) => v !== ''));
+
     try {
-      const model = sequelize.models[entityName];
-      if (!model) {
-        return res.status(404).json({ error: `Entity ${entityName} not found` });
-      }
-  
-      const [updatedRowsCount] = await model.update(updates, {
-        where: { id }
-      });
-  
-      if (updatedRowsCount === 0) {
-        return res.status(404).json({ error: `Entity with id ${id} not found` });
-      }
-  
-      res.json({ message: `Entity with id ${id} updated successfully` });
+        const model = sequelize.models[entityName];
+        if (!model) {
+            return res.status(404).json({ error: `Entity ${entityName} not found` });
+        }
+
+        const [updatedRowsCount] = await model.update(updates, {
+            where: { id }
+        });
+
+        if (updatedRowsCount === 0) {
+            return res.status(404).json({ error: `Entity with id ${id} not found` });
+        }
+
+        res.json({ message: `Entity with id ${id} updated successfully` });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
-  });
+});
+
   
   // Delete route
   router.delete('/:entityName/:id', async (req, res) => {
