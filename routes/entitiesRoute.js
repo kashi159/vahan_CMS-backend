@@ -6,16 +6,24 @@ const ModelInfo = require('../models/modelInfo');
 
 // Route to get list of all entities
 router.get('/entities', async (req, res) => {
-    try {
+  try {
       const tableNames = await sequelize.getQueryInterface().showAllTables();
-  
-      const entities = tableNames.filter(tableName => tableName !== 'SequelizeMeta');
-  
+
+      const entities = {};
+      for (const tableName of tableNames) {
+          if (tableName !== 'modelinfos') {
+              const columns = await sequelize.getQueryInterface().describeTable(tableName);
+              entities[tableName] = columns;
+          }
+      }
+
       res.json({ entities });
-    } catch (error) {
+  } catch (error) {
       res.status(500).json({ error: error.message });
-    }
-  });
+  }
+});
+
+
 
 // Create Entity route
 router.post('/entity', async (req, res) => {
