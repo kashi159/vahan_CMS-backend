@@ -8,10 +8,10 @@ const sequelize = require('../util/database');
 router.post('/:entityName', async (req, res) => {
     const entityName = req.params.entityName;
     const { attributes } = req.body;
-    console.log( entityName, attributes);
+    // console.log( entityName, attributes);
     try {
       const model = sequelize.models[entityName];
-      console.log(model);
+      // console.log(model);
       if (!model) {
         return res.status(404).json({ error: `Entity ${entityName} not found` });
       }
