@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+
+const pluralize = require('pluralize');
 const sequelize = require('../util/database');
 const  defineEntityModel  = require('../services/defineModel');
 const ModelInfo = require('../models/modelInfo');
@@ -12,8 +14,9 @@ router.get('/entities', async (req, res) => {
       const entities = {};
       for (const tableName of tableNames) {
           if (tableName !== 'modelinfos') {
+              const singularTableName = pluralize.singular(tableName);
               const columns = await sequelize.getQueryInterface().describeTable(tableName);
-              entities[tableName] = columns;
+              entities[singularTableName] = columns;
           }
       }
 
@@ -28,9 +31,10 @@ router.get('/entities', async (req, res) => {
 // Create Entity route
 router.post('/entity', async (req, res) => {
   const { name, attributes } = req.body;
+  const newName = name.toLowerCase();
   try {
     const model = await defineEntityModel(name, attributes);
-    await ModelInfo.create({ name, attributes });
+    await ModelInfo.create({ name: newName, attributes });
     res.status(201).json({ message: `Entity ${name} created successfully!`, model });
   } catch (error) {
     res.status(500).json({ error: error.message });

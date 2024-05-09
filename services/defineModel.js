@@ -4,7 +4,7 @@ const sequelize = require('../util/database');
 
 const defineEntityModel = async (entityName, attributes) => {
     const modelAttributes = {};
-    
+    // console.log(attributes);
     for (const [attributeName, attributeType] of Object.entries(attributes)) {
       modelAttributes[attributeName] = DataTypes[attributeType.toUpperCase()];
     }
