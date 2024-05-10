@@ -35,6 +35,11 @@ router.post('/entity', async (req, res) => {
   try {
     const model = await defineEntityModel(name, attributes);
     await ModelInfo.create({ name: newName, attributes });
+    const modelsInfo = await ModelInfo.findAll();
+
+  for (const info of modelsInfo) {
+    await defineEntityModel(info.name, info.attributes);
+  }
     res.status(201).json({ message: `Entity ${name} created successfully!`, model });
   } catch (error) {
     res.status(500).json({ error: error.message });
